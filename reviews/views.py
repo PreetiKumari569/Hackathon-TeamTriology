@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from .models import Review
-from django.db.models import Count, Avg, Q
+from django.db.models import Count, Q
 
 def product_sentiments(request):
     products = (
-        Review.objects.values("product_name")
+        Review.objects.values("product")  # change here
         .annotate(
             total=Count("id"),
             positive=Count("id", filter=Q(sentiment_score__gt=0.2)),
@@ -13,9 +13,8 @@ def product_sentiments(request):
         )
     )
 
-    # Convert counts to percentages
     for product in products:
-        total = product["total"] or 1  # avoid division by zero
+        total = product["total"] or 1
         product["positive"] = round((product["positive"] / total) * 100, 2)
         product["neutral"] = round((product["neutral"] / total) * 100, 2)
         product["negative"] = round((product["negative"] / total) * 100, 2)
