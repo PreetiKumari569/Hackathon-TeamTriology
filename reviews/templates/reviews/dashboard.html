@@ -1,23 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Sentiment Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Product Sentiment Dashboard</title>
+    <!-- ✅ Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <i class="fas fa-smile-beam text-success"></i>
+
 </head>
-<body>
-    <h1>Amazon Product Sentiment Ranking</h1>
-    <table border="1">
-        <tr>
-            <th>Product Name</th>
-            <th>Positive Sentiment %</th>
-            <th>Total Reviews</th>
-        </tr>
-        {% for name, percentage, total in data %}
-        <tr>
-            <td>{{ name }}</td>
-            <td>{{ percentage }}%</td>
-            <td>{{ total }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center text-primary">📊 Product Sentiment Analysis</h1>
+        
+        <table class="table table-striped table-bordered table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Total Reviews</th>
+                    <th>Positive % 😊</th>
+                    <th>Neutral % 😐</th>
+                    <th>Negative % 😞</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.product }}</td>
+                        <td>{{ product.total }}</td>
+                        <td>{{ product.positive }}%</td>
+                        <td>{{ product.neutral }}%</td>
+                        <td>{{ product.negative }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
