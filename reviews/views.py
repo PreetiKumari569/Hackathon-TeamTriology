@@ -1,15 +1,16 @@
+# reviews/views.py
 from django.shortcuts import render
-from .models import Review
 from django.db.models import Count, Q
+from .models import Review  # ✅ this is okay in views.py
 
 def product_sentiments(request):
     products = (
-        Review.objects.values("product")  # change here
+        Review.objects.values("product")
         .annotate(
             total=Count("id"),
-            positive=Count("id", filter=Q(sentiment_score__gt=0.2)),
-            neutral=Count("id", filter=Q(sentiment_score__gte=-0.2) & Q(sentiment_score__lte=0.2)),
-            negative=Count("id", filter=Q(sentiment_score__lt=-0.2)),
+            positive=Count("id", filter=Q(sentiment="positive")),
+            neutral=Count("id", filter=Q(sentiment="neutral")),
+            negative=Count("id", filter=Q(sentiment="negative")),
         )
     )
 
