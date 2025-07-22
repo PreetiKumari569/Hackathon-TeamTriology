@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from .models import Review
 from django.db.models import Count, Q
 
 def product_sentiments(request):
