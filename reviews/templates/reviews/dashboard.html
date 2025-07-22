@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Dashboard</title>
+</head>
+<body>
+    <h1>Amazon Product Sentiment Ranking</h1>
+    <table border="1">
+        <tr>
+            <th>Product Name</th>
+            <th>Positive Sentiment %</th>
+            <th>Total Reviews</th>
+        </tr>
+        {% for name, percentage, total in data %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>{{ percentage }}%</td>
+            <td>{{ total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
