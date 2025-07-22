@@ -1,18 +1,23 @@
 from django.shortcuts import render
-from .models import Product
+from .models import Review
+from django.db.models import Count, Avg, Q
 
 def product_sentiments(request):
-    products = Product.objects.all()
-    product_data = []
+    products = (
+        Review.objects.values("product_name")
+        .annotate(
+            total=Count("id"),
+            positive=Count("id", filter=Q(sentiment_score__gt=0.2)),
+            neutral=Count("id", filter=Q(sentiment_score__gte=-0.2) & Q(sentiment_score__lte=0.2)),
+            negative=Count("id", filter=Q(sentiment_score__lt=-0.2)),
+        )
+    )
 
+    # Convert counts to percentages
     for product in products:
-        reviews = product.reviews.all()
-        total = reviews.count()
-        positive = reviews.filter(sentiment='positive').count()
-        percentage = round((positive / total) * 100, 2) if total else 0
-        product_data.append((product.name, percentage, total))
+        total = product["total"] or 1  # avoid division by zero
+        product["positive"] = round((product["positive"] / total) * 100, 2)
+        product["neutral"] = round((product["neutral"] / total) * 100, 2)
+        product["negative"] = round((product["negative"] / total) * 100, 2)
 
-    # Sort by highest % of positive reviews
-    sorted_data = sorted(product_data, key=lambda x: x[1], reverse=True)
-
-    return render(request, 'reviews/dashboard.html', {'data': sorted_data})
+    return render(request, "reviews/dashboard.html", {"products": products})
