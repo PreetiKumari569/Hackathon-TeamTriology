@@ -1,12 +1,22 @@
-from django.db import models
+from django.shortcuts import render
+from .models import Review
+from django.db.models import Count, Q
 
-class Product(models.Model):
-    name = models.CharField(max_length=255)
+def product_sentiments(request):
+    products = (
+        Review.objects.values("product")
+        .annotate(
+            total=Count("id"),
+            positive=Count("id", filter=Q(sentiment="positive")),
+            neutral=Count("id", filter=Q(sentiment="neutral")),
+            negative=Count("id", filter=Q(sentiment="negative")),
+        )
+    )
 
-    def __str__(self):
-        return self.name
+    for product in products:
+        total = product["total"] or 1
+        product["positive"] = round((product["positive"] / total) * 100, 2)
+        product["neutral"] = round((product["neutral"] / total) * 100, 2)
+        product["negative"] = round((product["negative"] / total) * 100, 2)
 
-class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    text = models.TextField()
-    sentiment = models.CharField(max_length=20)
+    return render(request, "reviews/dashboard.html", {"products": products})
